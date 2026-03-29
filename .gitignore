@@ -73,7 +73,21 @@ dmypy.json
 Thumbs.db
 Desktop.ini
 
+# Logs
+*.log
+
 data/
 
 .env.local
 *.local
+
+plan.md
+
+test/
+artifacts/
+
+main.ipynb
+solve_classification_problem copy.ipynb
+solve_classification_problem.ipynb
+solve_segmentation_problem.ipynb
+test.py
