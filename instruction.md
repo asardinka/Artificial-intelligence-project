@@ -1,24 +1,27 @@
-# Запуск проекта
+# Первичная установка и запуск (все пакеты строго в .venv)
 
 ```powershell
 python -m venv .venv
-.venv\Scripts\activate
-python -m pip install --upgrade pip
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
-pip install -r requirements.txt --no-deps
-python -c "import torch; print(torch.cuda.is_available())"
-python data_load.py
-python main.py
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt --no-deps
+.\.venv\Scripts\python.exe -m pip --version
+.\.venv\Scripts\python.exe -c "import sys, torch; print(sys.executable); print(torch.cuda.is_available())"
+.\.venv\Scripts\python.exe data_load.py
+.\.venv\Scripts\python.exe main.py
 ```
 
-# Повторный запуск
+# Повторный запуск проекта
 
 ```powershell
-.venv\Scripts\activate
-python main.py
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+.\.venv\Scripts\python.exe main.py
 ```
 
-# Полное удаление проекта с зависимостями (включая CUDA-пакеты в venv)
+# Полное удаление окружения и установленных зависимостей
 
 ```powershell
 deactivate

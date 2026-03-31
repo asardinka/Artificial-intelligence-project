@@ -25,6 +25,17 @@ SEG_PATIENCE = 12
 CLS_NORM = "batch_normalization"
 SEG_NORM = "group_normalization"
 
+# Data pipeline tuning (CUDA).
+NUM_WORKERS = 4
+PREFETCH_FACTOR = 2
+GPU_PREFETCH_BATCHES = 4
+AUTO_TUNE_HARDWARE = False
+MAX_NUM_WORKERS = 8
+
+# Optional RAM tensor cache to avoid disk/PIL work each epoch.
+USE_RAM_TENSOR_CACHE = False
+RAM_CACHE_MAX_GB = 8.0
+
 DATA_CLS = Path("data/classification_task") # путь к данным для классификации
 DATA_SEG = Path("data/segmentation_task") # путь к данным для сегментации
 

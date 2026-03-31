@@ -6,8 +6,8 @@ from pathlib import Path
 import torch
 
 from src.config import *
-from src.training.classification import train_classification_task
-from src.training.segmentation import train_segmentation_task
+from src.training.classification_fast import train_classification_task
+from src.training.segmentation_fast import train_segmentation_task
 
 
 def _next_log_path(logs_dir: Path) -> Path:
@@ -38,6 +38,9 @@ def main() -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if device.type == "cuda":
         torch.backends.cudnn.benchmark = True
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+        torch.set_float32_matmul_precision("high")
 
     logger.info(f"Device: {device}")
     planes = ("ax", "co", "sa")

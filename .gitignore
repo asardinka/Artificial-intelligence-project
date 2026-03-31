@@ -79,6 +79,8 @@ Desktop.ini
 *.log
 
 data/
+!src/data/
+!src/data/**
 
 .env.local
 *.local
