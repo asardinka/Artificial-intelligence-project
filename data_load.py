@@ -7,7 +7,8 @@ import shutil
 import kagglehub
 
 
-DATA = Path("data")
+_PROJECT_ROOT = Path(__file__).resolve().parent
+DATA = _PROJECT_ROOT / "data"
 BRISC = DATA / "brisc2025"
 TUMOR_MAP = {"gl": "glioma", "me": "meningioma", "pi": "pituitary", "no": "no_tumor"}
 PLANES = ("ax", "sa", "co")

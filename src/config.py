@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+# Корень AIP (рядом с pyproject.toml): .../AIP/src/config.py → на два уровня вверх
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 SEED = 42
 
 CLASSES: tuple[str, ...] = ("glioma", "meningioma", "pituitary", "no_tumor")
@@ -25,21 +28,14 @@ SEG_PATIENCE = 12
 CLS_NORM = "batch_normalization"
 SEG_NORM = "group_normalization"
 
-# Data pipeline tuning (CUDA).
-NUM_WORKERS = 4
-PREFETCH_FACTOR = 2
-GPU_PREFETCH_BATCHES = 4
-AUTO_TUNE_HARDWARE = False
-MAX_NUM_WORKERS = 8
+DATA_ROOT = _PROJECT_ROOT / "data"
+DATA_CLS = DATA_ROOT / "classification_task"  # данные классификации
+DATA_SEG = DATA_ROOT / "segmentation_task"  # данные сегментации
 
-# Optional RAM tensor cache to avoid disk/PIL work each epoch.
-USE_RAM_TENSOR_CACHE = False
-RAM_CACHE_MAX_GB = 8.0
-
-DATA_CLS = Path("data/classification_task") # путь к данным для классификации
-DATA_SEG = Path("data/segmentation_task") # путь к данным для сегментации
-
-OUTPUT_DIR = Path("astifacts")
+# Чекпоинты текущего обучения (инференс, src.training.train_models)
+OUTPUT_DIR = _PROJECT_ROOT / "artifacts"
+# Первая версия пайплайна обучения — для сравнения с текущими весами
+OUTPUT_DIR_V1 = _PROJECT_ROOT / "artifacts" / "v1"
 
 def classification_train_dir(plane: str) -> Path:
     """Путь к train-папке классификации для выбранной плоскости."""

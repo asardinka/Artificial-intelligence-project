@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Проверка снимка</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .controls {
+      flex: 0 0 auto;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #ddd;
+    }
+    .controls-inner {
+      max-width: 48rem;
+    }
+    button, select, input[type="file"] {
+      font: inherit;
+      padding: 0.35rem 0;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; margin-bottom: 0.5rem; }
+    label { display: flex; align-items: center; gap: 0.5rem; }
+    #err { color: #b00; margin-top: 0.75rem; }
+    #results {
+      margin-top: 0.75rem;
+      display: none;
+    }
+    #results.show { display: block; }
+    .muted { color: #666; font-size: 0.9rem; }
+    .imgs-row {
+      flex: 1 1 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      min-height: 0;
+      background: #ccc;
+      width: 100%;
+    }
+    .img-cell {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      min-width: 0;
+      background: #fff;
+    }
+    .img-cell .caption {
+      flex: 0 0 auto;
+      padding: 0.35rem 0.5rem;
+      font-size: 0.85rem;
+      color: #555;
+      border-bottom: 1px solid #eee;
+    }
+    .img-cell .frame {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.25rem;
+    }
+    .img-cell img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      vertical-align: middle;
+    }
+    .img-cell img[hidden] { display: none; }
+    .placeholder {
+      color: #999;
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 1rem;
+    }
+    .img-cell.empty .frame .placeholder { display: block; }
+    .img-cell:not(.empty) .frame .placeholder { display: none; }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <div class="controls-inner">
+      <h1 style="margin: 0 0 0.75rem; font-size: 1.35rem;">Проверка опухоли</h1>
+      <div class="row">
+        <label for="plane">Плоскость</label>
+        <select id="plane" title="Анатомическая плоскость снимка (как при обучении моделей)">
+          <option value="ax">ax (аксиальная)</option>
+          <option value="sa">sa (сагиттальная)</option>
+          <option value="co">co (корональная)</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="f">Изображение</label>
+        <input type="file" id="f" accept="image/*" />
+      </div>
+      <p style="margin: 0.5rem 0 0;">
+        <button type="button" id="btn" disabled>Проверить опухоль</button>
+      </p>
+      <p id="err" hidden></p>
+      <div id="results">
+        <p style="margin: 0.25rem 0;"><strong>Класс:</strong> <span id="cls"></span></p>
+        <p class="muted" style="margin: 0;">Плоскость: <span id="pl"></span></p>
+      </div>
+    </div>
+  </div>
+  <div class="imgs-row" aria-label="Превью и результат">
+    <div class="img-cell empty" id="cell1">
+      <div class="caption">Исходное изображение</div>
+      <div class="frame">
+        <span class="placeholder">Выберите файл — изображение появится здесь</span>
+        <img id="im1" alt="Исходное изображение" hidden />
+      </div>
+    </div>
+    <div class="img-cell empty" id="cell2">
+      <div class="caption">Подсветка области</div>
+      <div class="frame">
+        <span class="placeholder">Нажмите «Проверить опухоль»</span>
+        <img id="im2" alt="С подсветкой" hidden />
+      </div>
+    </div>
+  </div>
+  <script>
+    const f = document.getElementById("f");
+    const planeSel = document.getElementById("plane");
+    const btn = document.getElementById("btn");
+    const err = document.getElementById("err");
+    const results = document.getElementById("results");
+    const im1 = document.getElementById("im1");
+    const im2 = document.getElementById("im2");
+    const cell1 = document.getElementById("cell1");
+    const cell2 = document.getElementById("cell2");
+
+    let previewUrl = null;
+
+    function setPreviewFromFile(file) {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        previewUrl = null;
+      }
+      im2.removeAttribute("src");
+      im2.hidden = true;
+      cell2.classList.add("empty");
+      results.classList.remove("show");
+
+      if (!file) {
+        im1.removeAttribute("src");
+        im1.hidden = true;
+        cell1.classList.add("empty");
+        return;
+      }
+      previewUrl = URL.createObjectURL(file);
+      im1.src = previewUrl;
+      im1.hidden = false;
+      cell1.classList.remove("empty");
+    }
+
+    f.addEventListener("change", () => {
+      err.hidden = true;
+      const file = f.files && f.files[0];
+      btn.disabled = !file;
+      setPreviewFromFile(file || null);
+    });
+
+    async function parseError(res) {
+      let msg = res.status + " " + res.statusText;
+      try {
+        const j = await res.json();
+        if (typeof j.detail === "string") msg = j.detail;
+        else if (Array.isArray(j.detail))
+          msg = j.detail.map((x) => x.msg || JSON.stringify(x)).join("; ");
+      } catch (_) {}
+      return msg;
+    }
+
+    btn.addEventListener("click", async () => {
+      const file = f.files && f.files[0];
+      if (!file) {
+        err.textContent = "Сначала выберите изображение.";
+        err.hidden = false;
+        return;
+      }
+
+      err.hidden = true;
+      results.classList.remove("show");
+      btn.disabled = true;
+
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("plane", planeSel.value);
+
+      try {
+        const res = await fetch("/predict", { method: "POST", body: fd });
+        if (!res.ok) {
+          err.textContent = await parseError(res);
+          err.hidden = false;
+          return;
+        }
+        const data = await res.json();
+        document.getElementById("cls").textContent = data.predicted_class;
+        document.getElementById("pl").textContent = data.plane;
+        im2.src = "data:image/png;base64," + data.image_overlay_b64;
+        im2.hidden = false;
+        cell2.classList.remove("empty");
+        results.classList.add("show");
+      } catch (e) {
+        err.textContent = String(e.message || e);
+        err.hidden = false;
+      } finally {
+        btn.disabled = !f.files || !f.files[0];
+      }
+    });
+  </script>
+</body>
+</html>

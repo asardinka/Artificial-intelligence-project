@@ -1,0 +1,16 @@
+.venv
+venv
+__pycache__
+*.pyc
+.git
+.gitignore
+*.log
+artifacts
+data
+*.ipynb
+.pytest_cache
+.mypy_cache
+.ruff_cache
+instruction.md
+data_load.ipynb
+test.ipynb

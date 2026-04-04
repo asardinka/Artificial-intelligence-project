@@ -10,7 +10,12 @@ def save_checkpoint(path: Path, checkpoint: dict) -> None:
     torch.save(checkpoint, path)
 
 
-def load_checkpoint(path: Path, map_location: str = "cpu") -> dict:
-    """Загружает чекпоинт с диска."""
-    return torch.load(path, map_location=map_location, weights_only=False)
+def load_checkpoint(path: Path, map_location: str | None = None) -> dict:
+    """Загружает чекпоинт с диска.
+
+    Всегда читает тензоры на CPU: при map_location=cuda часть чекпоинтов падает с
+    RuntimeError (нестандартный tag устройства в pickle). Модель потом .to(device).
+    """
+    _ = map_location  # оставлен для совместимости вызовов
+    return torch.load(path, map_location="cpu", weights_only=False)
 

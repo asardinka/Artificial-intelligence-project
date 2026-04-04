@@ -1,6 +1,10 @@
+# Кэш Python
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Архивы (датасеты, выгрузки)
+*.zip
 
 *.so
 
@@ -18,18 +22,25 @@ sdist/
 var/
 wheels/
 share/python-wheels/
+# setuptools / pip install -e .
 *.egg-info/
+aip_tumor.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
 
 .env
+# Виртуальное окружение
+.venv/
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
+# uv: кэш и локальное окружение в каталоге проекта
+.uv/
 
 *.manifest
 *.spec
@@ -63,13 +74,16 @@ dmypy.json
 .pyre/
 .pytype/
 
+.ruff_cache/
+
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
-*.png
 
+# Случайные PNG в корне (графики обучения — в artifacts/, см. ниже)
+/*.png
 
 .DS_Store
 Thumbs.db
@@ -78,6 +92,7 @@ Desktop.ini
 # Logs
 *.log
 
+# Данные BRISC и подготовленный датасет (не путать с пакетом src/data — код)
 data/
 !src/data/
 !src/data/**
@@ -88,7 +103,13 @@ data/
 plan.md
 
 test/
+# Чекпоинты и графики обучения (текущие веса + legacy в artifacts/v1/)
 artifacts/
+artifacts/v1/
+
+# Чекпоинты в корне (если положили мимо artifacts/)
+/*.pt
+/*.pth
 
 main.ipynb
 solve_classification_problem copy.ipynb
