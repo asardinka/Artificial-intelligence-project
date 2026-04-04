@@ -104,7 +104,6 @@ plan.md
 
 test/
 # Чекпоинты и графики обучения (текущие веса + legacy в artifacts/v1/)
-artifacts/
 artifacts/v1/
 
 # Чекпоинты в корне (если положили мимо artifacts/)
