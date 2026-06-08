@@ -63,7 +63,7 @@ python -m src.training.train_models
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/Scripts/activate
 python -m pip install --upgrade pip
 python -m pip install -e .
 python -m uvicorn src.tumor_app.api:app --host 0.0.0.0 --port 8000
