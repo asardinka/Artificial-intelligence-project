@@ -1,5 +1,7 @@
 # Сегментация и классификация опухолей мозга по МРТ
 
+<img width="1917" height="974" alt="изображение" src="https://github.com/user-attachments/assets/4f9705ff-1602-4f70-81ff-8ac0d7157214" />
+
 По одному срезу: **классификация** типа опухоли и **сегментация** (плоскости **ax** / **sa** / **co**). Датасет обучения: [BRISC 2025](https://www.kaggle.com/datasets/briscdataset/brisc2025).
 
 ## Что нужно на машине
